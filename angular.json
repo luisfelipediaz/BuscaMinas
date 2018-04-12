@@ -3,14 +3,14 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "BuscaMinas": {
+    "buscaminas": {
       "root": "",
       "projectType": "application",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/BuscaMinas",
+            "outputPath": "dist/buscaminas",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -50,25 +50,26 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "serviceWorker": true
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "BuscaMinas:build"
+            "browserTarget": "buscaminas:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "BuscaMinas:build:production"
+              "browserTarget": "buscaminas:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "BuscaMinas:build"
+            "browserTarget": "buscaminas:build"
           }
         },
         "test": {
@@ -112,7 +113,7 @@
         }
       }
     },
-    "BuscaMinas-e2e": {
+    "buscaminas-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -120,7 +121,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "BuscaMinas:serve"
+            "devServerTarget": "buscaminas:serve"
           }
         },
         "lint": {
