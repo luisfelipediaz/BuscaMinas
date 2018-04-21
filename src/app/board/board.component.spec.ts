@@ -32,11 +32,20 @@ describe('BoardComponent', () => {
   });
 
   it('should render as many "tr" as there are rows in the game', () => {
-    component.game = new Minesweeper(8, 8, 10);
+    component.game = Minesweeper.newBeginersGame();
     fixture.detectChanges();
 
     const tr = fixture.debugElement.queryAll(By.css('table>tbody>tr'));
 
     expect(tr.length).toBe(8);
+  });
+
+
+  it('should render 8 td by tr', () => {
+    component.game = Minesweeper.newBeginersGame();
+    fixture.detectChanges();
+    const tds = fixture.debugElement.queryAll(By.css('tr:first-child>td'));
+
+    expect(tds.length).toBe(8);
   });
 });
