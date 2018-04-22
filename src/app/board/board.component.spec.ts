@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoardComponent } from './board.component';
 import { By } from '@angular/platform-browser';
 import { Minesweeper } from '../minesweeper/minesweeper';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('BoardComponent', () => {
   let component: BoardComponent;
@@ -10,7 +11,8 @@ describe('BoardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [BoardComponent]
+      declarations: [BoardComponent],
+      schemas: [ NO_ERRORS_SCHEMA ]
     })
       .compileComponents();
   }));
@@ -47,5 +49,13 @@ describe('BoardComponent', () => {
     const tds = fixture.debugElement.queryAll(By.css('tr:first-child>td'));
 
     expect(tds.length).toBe(8);
+  });
+
+  it('should render one "cell" component by td', () => {
+    component.game = Minesweeper.newBeginersGame();
+    fixture.detectChanges();
+    const cell = fixture.debugElement.query(By.css('tr:first-child>td>cell'));
+
+    expect(cell).toBeTruthy();
   });
 });

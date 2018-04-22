@@ -2,7 +2,9 @@
   <tbody>
     <ng-container *ngIf="game">
       <tr *ngFor="let row of game.getMatrix()">
-        <td *ngFor="let cell of row"></td>
+        <td *ngFor="let cell of row">
+          <cell></cell>
+        </td>
       </tr>
     </ng-container>
   </tbody>
