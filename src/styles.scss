@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+table {
+    width: 30%;
+
+    td {
+        position: relative;
+        border: 1px solid gray;
+        background: lightgray;
+    }
+
+    td:after {
+        content: '';
+        display: block;
+        margin-top: 100%;
+    }
+
+    td .content {
+        position: absolute;
+        text-align: center;
+        vertical-align: middle;
+    }
+}

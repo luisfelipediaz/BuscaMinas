@@ -23,4 +23,13 @@ describe('Minesweeper', () => {
 
         expect(actual).toEqual(expected);
     });
+
+    it('should "constructor" call createMines with the parameters correct', () => {
+        spyOn(Minesweeper.prototype, 'createMines');
+        const game = new Minesweeper(8, 8, 12);
+
+        expect(Minesweeper.prototype.createMines).toHaveBeenCalledWith(12);
+    });
+
+    it('should createMines call 8 times "createMine"');
 });
