@@ -1,9 +1,9 @@
-<table>
+<table class="col">
   <tbody>
     <ng-container *ngIf="game">
       <tr *ngFor="let row of game.getMatrix()">
         <td *ngFor="let cell of row">
-          <cell></cell>
+          <cell [cell]="cell"></cell>
         </td>
       </tr>
     </ng-container>

@@ -33,14 +33,14 @@ describe('Minesweeper', () => {
         expect(actual.getMatrix().pop().length).toEqual(expected.getMatrix().pop().length);
     });
 
-    it('should "getMatr ix" return correct value', () => {
+    it('should "getMatrix" return correct value', () => {
         const cellFill: Cell = {
             beaten: false,
-            isMine: true,
+            isMine: false,
             probability: 0
         };
 
-        const gameFake = new Minesweeper({ rows: 2, columns: 2, countMines: 4 });
+        const gameFake = new Minesweeper({ rows: 2, columns: 2, countMines: 0 });
         const expected: CellsMatrix = new Array(2).fill(new Array(2).fill(cellFill));
         const actual = gameFake.getMatrix();
 
@@ -62,14 +62,19 @@ describe('Minesweeper', () => {
         expect(Minesweeper.prototype.generateNewMine).toHaveBeenCalledTimes(8);
     });
 
-    it('should "generateNewMine" call "getFirstPositionWithoutMine" and set "isMine" to true in position returned', () => {
+    // tslint:disable-next-line:max-line-length
+    it('should "generateNewMine" call "getFirstPositionWithoutMine", set "isMine" to true in position returned, delete probability to cell and call "increasePerimeterProbability"', () => {
         const gameFake = new Minesweeper({ rows: 9, columns: 9, countMines: 3 });
-        spyOn(gameFake, 'getFirstPositionWithoutMine').and.returnValue({ row: 1, column: 2 });
+        const positionFake: BoardPosition = { row: 1, column: 2 };
+        spyOn(gameFake, 'getFirstPositionWithoutMine').and.returnValue(positionFake);
+        spyOn(gameFake, 'increasePerimeterProbability');
 
         gameFake.generateNewMine();
 
         expect(gameFake.getFirstPositionWithoutMine).toHaveBeenCalled();
         expect(gameFake.getMatrix()[1][2].isMine).toBeTruthy();
+        expect(gameFake.getMatrix()[1][2].probability).toBeUndefined();
+        expect(gameFake.increasePerimeterProbability).toHaveBeenCalledWith(positionFake);
     });
 
     it('should "getFirstPositionWithoutMine" return { row: 0, column: 1 }', () => {
@@ -83,5 +88,50 @@ describe('Minesweeper', () => {
         const actual = gameFake.getFirstPositionWithoutMine();
 
         expect(actual).toEqual(expected);
+    });
+
+    // tslint:disable-next-line:max-line-length
+    it('should "increasePerimeterProbability" increase around of position in: [up, left],[up],[up, right],[left],[right],[down, left],[down],[down, right]', () => {
+        const game = new Minesweeper({ rows: 3, columns: 3, countMines: 0 });
+
+        game.increasePerimeterProbability({ row: 1, column: 1 });
+
+        expect(game.getMatrix()[2][0].probability).toBe(1);
+        expect(game.getMatrix()[2][1].probability).toBe(1);
+        expect(game.getMatrix()[2][2].probability).toBe(1);
+        expect(game.getMatrix()[1][0].probability).toBe(1);
+        expect(game.getMatrix()[1][2].probability).toBe(1);
+        expect(game.getMatrix()[0][0].probability).toBe(1);
+        expect(game.getMatrix()[0][1].probability).toBe(1);
+        expect(game.getMatrix()[0][2].probability).toBe(1);
+    });
+
+    // tslint:disable-next-line:max-line-length
+    it('should "increasePerimeterProbability" increase around of position in: [up, left],[up],[up, right],[left],[right],[down, left],[down],[down, right] only if in this position not have a mine', () => {
+        const game = new Minesweeper({ rows: 3, columns: 3, countMines: 0 });
+        game.getMatrix()[2][1].isMine = true;
+
+        game.increasePerimeterProbability({ row: 1, column: 1 });
+
+        expect(game.getMatrix()[2][1].probability).toBe(0);
+
+        expect(game.getMatrix()[2][0].probability).toBe(1);
+        expect(game.getMatrix()[2][2].probability).toBe(1);
+        expect(game.getMatrix()[1][0].probability).toBe(1);
+        expect(game.getMatrix()[1][2].probability).toBe(1);
+        expect(game.getMatrix()[0][0].probability).toBe(1);
+        expect(game.getMatrix()[0][1].probability).toBe(1);
+        expect(game.getMatrix()[0][2].probability).toBe(1);
+    });
+
+    // tslint:disable-next-line:max-line-length
+    it('should "increasePerimeterProbability" increase around of position in: [up, left],[up],[up, right],[left],[right],[down, left],[down],[down, right] only if the position not out of range to matrix', () => {
+        const game = new Minesweeper({ rows: 3, columns: 3, countMines: 0 });
+
+        game.increasePerimeterProbability({ row: 0, column: 0 });
+
+        expect(game.getMatrix()[1][0].probability).toBe(1);
+        expect(game.getMatrix()[1][1].probability).toBe(1);
+        expect(game.getMatrix()[0][1].probability).toBe(1);
     });
 });

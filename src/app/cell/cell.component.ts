@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Cell } from './cell';
 
 @Component({
   selector: 'cell',
@@ -6,5 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./cell.component.scss']
 })
 export class CellComponent {
+  @Input() cell: Cell;
+
   constructor() { }
 }

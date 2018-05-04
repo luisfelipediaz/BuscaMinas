@@ -26,6 +26,9 @@ export class Minesweeper {
         const position = this.getFirstPositionWithoutMine();
 
         this.matrix[position.row][position.column].isMine = true;
+        delete this.matrix[position.row][position.column].probability;
+
+        this.increasePerimeterProbability(position);
     }
 
     getFirstPositionWithoutMine(): BoardPosition {
@@ -36,6 +39,38 @@ export class Minesweeper {
         } while (this.matrix[position.row][position.column].isMine);
 
         return position;
+    }
+
+    increasePerimeterProbability(position: BoardPosition) {
+        this.incrementProbabilityIfNotIsMine({ row: position.row + 1, column: position.column - 1 });
+        this.incrementProbabilityIfNotIsMine({ row: position.row + 1, column: position.column });
+        this.incrementProbabilityIfNotIsMine({ row: position.row + 1, column: position.column + 1 });
+        this.incrementProbabilityIfNotIsMine({ row: position.row, column: position.column - 1 });
+        this.incrementProbabilityIfNotIsMine({ row: position.row, column: position.column + 1 });
+        this.incrementProbabilityIfNotIsMine({ row: position.row - 1, column: position.column - 1 });
+        this.incrementProbabilityIfNotIsMine({ row: position.row - 1, column: position.column });
+        this.incrementProbabilityIfNotIsMine({ row: position.row - 1, column: position.column + 1 });
+    }
+
+    private incrementProbabilityIfNotIsMine(position: BoardPosition) {
+        if (this.isOutOfRange(position)) {
+            return;
+        }
+        if (!this.matrix[position.row][position.column].isMine) {
+            this.matrix[position.row][position.column].probability++;
+        }
+    }
+
+    private isOutOfRange(position: BoardPosition) {
+        if (position.row < 0 || position.row >= this.dimension.rows) {
+            return true;
+        }
+
+        if (position.column < 0 || position.column >= this.dimension.columns) {
+            return true;
+        }
+
+        return false;
     }
 
     getMatrix(): CellsMatrix {
