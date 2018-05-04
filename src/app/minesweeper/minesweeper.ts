@@ -1,15 +1,19 @@
-export class Minesweeper {
-    private matrix: Cell[][];
-    private dimensions: { rows: number, columns: number };
+import { Cell, CellsMatrix } from '../cell/cell';
+import { BoardPosition } from '../board/board-position';
+import { Dimension } from './dimension';
+import { DimensionOfMinesweeper } from './dimension-of-minesweeper';
+import { Utilities } from '../utilities';
 
-    constructor(rows: number, columns: number, private countMines: number) {
-        this.matrix = new Array(rows).fill(new Array(columns).fill({ ...newCell }));
-        this.dimensions = { rows, columns };
-        this.createMines(countMines);
+export class Minesweeper {
+    private matrix: CellsMatrix;
+
+    constructor(private dimension: DimensionOfMinesweeper) {
+        this.matrix = Utilities.generateMatrixWithNewsCells(dimension);
+        this.createMines(dimension.countMines);
     }
 
     static newBeginersGame() {
-        return new Minesweeper(8, 8, 10);
+        return new Minesweeper({ rows: 8, columns: 8, countMines: 10 });
     }
 
     createMines(countMines: number) {
@@ -19,36 +23,22 @@ export class Minesweeper {
     }
 
     generateNewMine() {
-        let row: number;
-        let column: number;
+        const position = this.getFirstPositionWithoutMine();
+
+        this.matrix[position.row][position.column].isMine = true;
+    }
+
+    getFirstPositionWithoutMine(): BoardPosition {
+        let position: BoardPosition;
 
         do {
-            row = Math.floor(Math.random() * this.dimensions.rows);
-            column = Math.floor(Math.random() * this.dimensions.columns);
-        } while (this.matrix[row][column].isMine);
+            position = Utilities.getRandomPosition(this.dimension);
+        } while (this.matrix[position.row][position.column].isMine);
 
-        this.matrix[row][column].isMine = true;
+        return position;
     }
 
-    getMatrix(): any[][] {
+    getMatrix(): CellsMatrix {
         return this.matrix;
     }
-}
-
-export function generateMatrixWithNewsCells(dimensions: { rows: number, columns: number }): Cell[][] {
-    const matrix: Cell[][] = new Array(dimensions.rows);
-    matrix.fill({...new Array(dimensions.columns).fill({ ...newCell })});
-    return matrix;
-}
-
-const newCell: Cell = {
-    isMine: false,
-    beaten: false,
-    probability: 0
-};
-
-export interface Cell {
-    isMine: boolean;
-    beaten: boolean;
-    probability: number;
 }

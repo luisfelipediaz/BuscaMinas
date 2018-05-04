@@ -1,42 +1,55 @@
-import { Minesweeper, Cell, generateMatrixWithNewsCells } from './minesweeper';
-
-describe('GenerateMatrixWithNewsCells', () => {
-    it('should "generateMatrixWithNewsCells" return a new matrix expected', () => {
-        const cell: Cell = {
-            isMine: false,
-            beaten: false,
-            probability: 0
-        };
-        const expected = new Array(10).fill(new Array(9).fill(cell));
-        const actual = generateMatrixWithNewsCells({ rows: 10, columns: 9 });
-
-        expect(actual).toEqual(expected);
-    });
-});
+import { Minesweeper } from './minesweeper';
+import { Cell, CellsMatrix } from '../cell/cell';
+import { BoardPosition } from '../board/board-position';
+import { DimensionOfMinesweeper } from './dimension-of-minesweeper';
+import { Utilities } from '../utilities';
 
 describe('Minesweeper', () => {
     it('should create by correct dimensions', () => {
-        const minesweeper = new Minesweeper(8, 8, 10);
+        const minesweeper = new Minesweeper({ rows: 8, columns: 8, countMines: 10 });
         expect(minesweeper).toBeTruthy();
     });
 
-    it('should "Minesweeper.newBeginersGame" return a new correct game', () => {
-        const expected = new Minesweeper(8, 8, 10);
-        const actual = Minesweeper.newBeginersGame();
-        expect(actual).toEqual(expected);
+    it('should create call "Utilities.generateMatrixWithNewsCells" and "createMines"', () => {
+        spyOn(Utilities, 'generateMatrixWithNewsCells');
+        spyOn(Minesweeper.prototype, 'createMines');
+
+        const expected: DimensionOfMinesweeper = {
+            rows: 2,
+            columns: 2,
+            countMines: 4
+        };
+        const gameFake = new Minesweeper(expected);
+
+        expect(Utilities.generateMatrixWithNewsCells).toHaveBeenCalledWith(expected);
+        expect(Minesweeper.prototype.createMines).toHaveBeenCalledWith(expected.countMines);
     });
 
-    it('should "getMatrix" return correct value', () => {
-        const gameFake = { matrix: generateMatrixWithNewsCells({ rows: 8, columns: 8 }) };
-        const expected = generateMatrixWithNewsCells({ rows: 8, columns: 8 });
-        const actual = Minesweeper.prototype.getMatrix.call(gameFake);
+    it('should "Minesweeper.newBeginersGame" return a new correct game', () => {
+        const expected = new Minesweeper({ rows: 8, columns: 8, countMines: 10 });
+        const actual = Minesweeper.newBeginersGame();
+
+        expect(actual.getMatrix().length).toEqual(expected.getMatrix().length);
+        expect(actual.getMatrix().pop().length).toEqual(expected.getMatrix().pop().length);
+    });
+
+    it('should "getMatr ix" return correct value', () => {
+        const cellFill: Cell = {
+            beaten: false,
+            isMine: true,
+            probability: 0
+        };
+
+        const gameFake = new Minesweeper({ rows: 2, columns: 2, countMines: 4 });
+        const expected: CellsMatrix = new Array(2).fill(new Array(2).fill(cellFill));
+        const actual = gameFake.getMatrix();
 
         expect(actual).toEqual(expected);
     });
 
     it('should "constructor" call createMines with the parameters correct', () => {
         spyOn(Minesweeper.prototype, 'createMines');
-        const game = new Minesweeper(8, 8, 12);
+        const game = new Minesweeper({ rows: 8, columns: 8, countMines: 12 });
 
         expect(Minesweeper.prototype.createMines).toHaveBeenCalledWith(12);
     });
@@ -49,47 +62,26 @@ describe('Minesweeper', () => {
         expect(Minesweeper.prototype.generateNewMine).toHaveBeenCalledTimes(8);
     });
 
-    it('should "generateNewMine" create two random and in this position generate new mine', () => {
-        const gameFake = {
-            matrix: generateMatrixWithNewsCells({ rows: 8, columns: 9 }),
-            dimensions: { rows: 8, columns: 9 }
-        };
-        const expectedCell: Cell = {
-            beaten: false,
-            isMine: true,
-            probability: 0
-        };
-        spyOn(Math, 'random').and.returnValue(0.5);
-        spyOn(Math, 'floor').and.returnValue(4);
+    it('should "generateNewMine" call "getFirstPositionWithoutMine" and set "isMine" to true in position returned', () => {
+        const gameFake = new Minesweeper({ rows: 9, columns: 9, countMines: 3 });
+        spyOn(gameFake, 'getFirstPositionWithoutMine').and.returnValue({ row: 1, column: 2 });
 
-        Minesweeper.prototype.generateNewMine.call(gameFake);
+        gameFake.generateNewMine();
 
-        expect(Math.random).toHaveBeenCalledTimes(2);
-        expect(Math.floor).toHaveBeenCalledTimes(2);
-        expect(gameFake.matrix[4][4]).toEqual(expectedCell);
+        expect(gameFake.getFirstPositionWithoutMine).toHaveBeenCalled();
+        expect(gameFake.getMatrix()[1][2].isMine).toBeTruthy();
     });
 
-    fit('should "generateNewMine" if selected cell its mine, retry until find cell to not a mine', () => {
-        debugger;
-        let countEntry = 0;
-        const gameFake = {
-            matrix: generateMatrixWithNewsCells({ rows: 8, columns: 9 }),
-            dimensions: { rows: 8, columns: 9 }
-        };
-        gameFake.matrix[4][4].isMine = true;
+    it('should "getFirstPositionWithoutMine" return { row: 0, column: 1 }', () => {
+        const gameFake = new Minesweeper({ rows: 2, columns: 2, countMines: 0 });
+        gameFake.getMatrix()[0][0].isMine = true;
+        gameFake.getMatrix()[1][0].isMine = true;
+        gameFake.getMatrix()[1][1].isMine = true;
+        gameFake.getMatrix()[0][1].isMine = false;
 
-        const expectedCell: Cell = {
-            beaten: false,
-            isMine: true,
-            probability: 0
-        };
+        const expected: BoardPosition = { row: 0, column: 1 };
+        const actual = gameFake.getFirstPositionWithoutMine();
 
-        spyOn(Math, 'random').and.returnValue(0.5);
-        spyOn(Math, 'floor').and.callFake(() => { if (countEntry < 2) { countEntry++; return 4; } return 3; });
-
-        Minesweeper.prototype.generateNewMine.call(gameFake);
-        expect(Math.random).toHaveBeenCalledTimes(4);
-        expect(Math.floor).toHaveBeenCalledTimes(4);
-        expect(gameFake.matrix[3][3]).toEqual(expectedCell);
+        expect(actual).toEqual(expected);
     });
 });
