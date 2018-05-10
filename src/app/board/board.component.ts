@@ -3,8 +3,7 @@ import { Minesweeper } from '../minesweeper/minesweeper';
 
 @Component({
   selector: 'board',
-  templateUrl: './board.component.html',
-  styleUrls: ['./board.component.scss']
+  templateUrl: './board.component.html'
 })
 export class BoardComponent implements OnInit {
   @Input() game: Minesweeper;

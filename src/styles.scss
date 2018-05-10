@@ -29,4 +29,9 @@ table {
         line-height: 100%;
         padding-top: calc((100% - 50%) - 0.5rem);
     }
+
+    td:hover {
+        background: gray;
+        cursor: pointer;
+    }
 }

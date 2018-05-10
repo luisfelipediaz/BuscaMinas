@@ -3,11 +3,13 @@ import { Cell } from './cell';
 
 @Component({
   selector: 'cell',
-  templateUrl: './cell.component.html',
-  styleUrls: ['./cell.component.scss']
+  templateUrl: './cell.component.html'
 })
 export class CellComponent {
   @Input() cell: Cell;
 
   constructor() { }
+
+  clickCell() {
+  }
 }

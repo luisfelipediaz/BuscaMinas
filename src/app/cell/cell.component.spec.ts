@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CellComponent } from './cell.component';
+import { By } from '@angular/platform-browser';
 
 describe('CellComponent', () => {
   let component: CellComponent;
@@ -8,9 +9,9 @@ describe('CellComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CellComponent ]
+      declarations: [CellComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -21,5 +22,20 @@ describe('CellComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should be render a p element with class content', () => {
+    const pElement = fixture.debugElement.query(By.css('p[class="content"]'));
+
+    expect(pElement).toBeTruthy();
+  });
+
+  it('should on click p element call "clickCell"', () => {
+    spyOn(component, 'clickCell');
+    const pElement = fixture.debugElement.query(By.css('p[class="content"]'));
+
+    pElement.nativeElement.click();
+
+    expect(component.clickCell).toHaveBeenCalled();
   });
 });
