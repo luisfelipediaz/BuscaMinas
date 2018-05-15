@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Cell } from './cell';
 
 @Component({
@@ -7,9 +7,15 @@ import { Cell } from './cell';
 })
 export class CellComponent {
   @Input() cell: Cell;
+  @Output() clickCell: EventEmitter<Cell> = new EventEmitter<Cell>();
 
   constructor() { }
 
-  clickCell() {
+  click() {
+    if (this.cell.beaten) {
+      return;
+    }
+
+    this.clickCell.emit(this.cell);
   }
 }

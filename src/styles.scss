@@ -28,6 +28,10 @@ table {
         vertical-align: middle;
         line-height: 100%;
         padding-top: calc((100% - 50%) - 0.5rem);
+
+        h3 {
+            line-height: unset;
+        }
     }
 
     td:hover {
