@@ -9,14 +9,14 @@ export class Minesweeper {
 
     constructor(private dimension: DimensionOfMinesweeper) {
         this.matrix = Utilities.generateMatrixWithNewsCells(dimension);
-        this.createMines(dimension.countMines);
+        this.generateMines(dimension.countMines);
     }
 
     static newBeginersGame() {
         return new Minesweeper({ rows: 8, columns: 8, countMines: 10 });
     }
 
-    createMines(countMines: number) {
+    generateMines(countMines: number) {
         for (let index = 0; index < countMines; index++) {
             this.generateNewMine();
         }
@@ -24,9 +24,10 @@ export class Minesweeper {
 
     generateNewMine() {
         const position = this.getFirstPositionWithoutMine();
+        const cell = this.matrix[position.row][position.column];
 
-        this.matrix[position.row][position.column].isMine = true;
-        delete this.matrix[position.row][position.column].probability;
+        cell.isMine = true;
+        delete cell.probability;
 
         this.increasePerimeterProbability(position);
     }
@@ -42,11 +43,11 @@ export class Minesweeper {
     }
 
     increasePerimeterProbability(position: BoardPosition) {
-        this.travelInPerimeterOfPositionWithCallBack(position,
+        this.travelOfPerimeterWithCallBack(position,
             (positionInternal: BoardPosition) => this.incrementProbabilityIfNotIsMine(positionInternal));
     }
 
-    private travelInPerimeterOfPositionWithCallBack(position: BoardPosition, callback: any) {
+    private travelOfPerimeterWithCallBack(position: BoardPosition, callback: any) {
         this.verifyPositionAndCallBack({ row: position.row + 1, column: position.column - 1 }, callback);
         this.verifyPositionAndCallBack({ row: position.row + 1, column: position.column }, callback);
         this.verifyPositionAndCallBack({ row: position.row + 1, column: position.column + 1 }, callback);
@@ -104,7 +105,7 @@ export class Minesweeper {
         const callback = (positionInternal: BoardPosition) => {
             this.processDiscovered(positionInternal);
         };
-        this.travelInPerimeterOfPositionWithCallBack(position, callback);
+        this.travelOfPerimeterWithCallBack(position, callback);
     }
 
     private processDiscovered(position: BoardPosition) {

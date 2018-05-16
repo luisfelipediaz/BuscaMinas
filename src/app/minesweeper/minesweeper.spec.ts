@@ -12,7 +12,7 @@ describe('Minesweeper', () => {
 
     it('should create call "Utilities.generateMatrixWithNewsCells" and "createMines"', () => {
         spyOn(Utilities, 'generateMatrixWithNewsCells');
-        spyOn(Minesweeper.prototype, 'createMines');
+        spyOn(Minesweeper.prototype, 'generateMines');
 
         const expected: DimensionOfMinesweeper = {
             rows: 2,
@@ -22,7 +22,7 @@ describe('Minesweeper', () => {
         const gameFake = new Minesweeper(expected);
 
         expect(Utilities.generateMatrixWithNewsCells).toHaveBeenCalledWith(expected);
-        expect(Minesweeper.prototype.createMines).toHaveBeenCalledWith(expected.countMines);
+        expect(Minesweeper.prototype.generateMines).toHaveBeenCalledWith(expected.countMines);
     });
 
     it('should "Minesweeper.newBeginersGame" return a new correct game', () => {
@@ -48,17 +48,17 @@ describe('Minesweeper', () => {
         expect(actual).toEqual(expected);
     });
 
-    it('should "constructor" call createMines with the parameters correct', () => {
-        spyOn(Minesweeper.prototype, 'createMines');
+    it('should "constructor" call "generateMines" with the parameters correct', () => {
+        spyOn(Minesweeper.prototype, 'generateMines');
         const game = new Minesweeper({ rows: 8, columns: 8, countMines: 12 });
 
-        expect(Minesweeper.prototype.createMines).toHaveBeenCalledWith(12);
+        expect(Minesweeper.prototype.generateMines).toHaveBeenCalledWith(12);
     });
 
     it('should createMines call 8 times "generateNewMine"', () => {
         spyOn(Minesweeper.prototype, 'generateNewMine');
 
-        Minesweeper.prototype.createMines.call(Minesweeper.prototype, 8);
+        Minesweeper.prototype.generateMines.call(Minesweeper.prototype, 8);
 
         expect(Minesweeper.prototype.generateNewMine).toHaveBeenCalledTimes(8);
     });
