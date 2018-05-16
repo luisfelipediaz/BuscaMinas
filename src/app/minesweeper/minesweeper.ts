@@ -42,20 +42,30 @@ export class Minesweeper {
     }
 
     increasePerimeterProbability(position: BoardPosition) {
-        this.incrementProbabilityIfNotIsMine({ row: position.row + 1, column: position.column - 1 });
-        this.incrementProbabilityIfNotIsMine({ row: position.row + 1, column: position.column });
-        this.incrementProbabilityIfNotIsMine({ row: position.row + 1, column: position.column + 1 });
-        this.incrementProbabilityIfNotIsMine({ row: position.row, column: position.column - 1 });
-        this.incrementProbabilityIfNotIsMine({ row: position.row, column: position.column + 1 });
-        this.incrementProbabilityIfNotIsMine({ row: position.row - 1, column: position.column - 1 });
-        this.incrementProbabilityIfNotIsMine({ row: position.row - 1, column: position.column });
-        this.incrementProbabilityIfNotIsMine({ row: position.row - 1, column: position.column + 1 });
+        this.travelInPerimeterOfPositionWithCallBack(position,
+            (positionInternal: BoardPosition) => this.incrementProbabilityIfNotIsMine(positionInternal));
     }
 
-    private incrementProbabilityIfNotIsMine(position: BoardPosition) {
+    private travelInPerimeterOfPositionWithCallBack(position: BoardPosition, callback: any) {
+        this.verifyPositionAndCallBack({ row: position.row + 1, column: position.column - 1 }, callback);
+        this.verifyPositionAndCallBack({ row: position.row + 1, column: position.column }, callback);
+        this.verifyPositionAndCallBack({ row: position.row + 1, column: position.column + 1 }, callback);
+        this.verifyPositionAndCallBack({ row: position.row, column: position.column - 1 }, callback);
+        this.verifyPositionAndCallBack({ row: position.row, column: position.column + 1 }, callback);
+        this.verifyPositionAndCallBack({ row: position.row - 1, column: position.column - 1 }, callback);
+        this.verifyPositionAndCallBack({ row: position.row - 1, column: position.column }, callback);
+        this.verifyPositionAndCallBack({ row: position.row - 1, column: position.column + 1 }, callback);
+    }
+
+    private verifyPositionAndCallBack(position: BoardPosition, callback: any) {
         if (this.isOutOfRange(position)) {
             return;
         }
+
+        callback(position);
+    }
+
+    private incrementProbabilityIfNotIsMine(position: BoardPosition) {
         if (!this.matrix[position.row][position.column].isMine) {
             this.matrix[position.row][position.column].probability++;
         }
@@ -71,6 +81,43 @@ export class Minesweeper {
         }
 
         return false;
+    }
+
+    processBeaten(position: BoardPosition) {
+        const cellBeaten: Cell = this.matrix[position.row][position.column];
+        cellBeaten.discovered = cellBeaten.beaten = true;
+
+        if (cellBeaten.isMine) {
+            this.matrix.forEach((row: Cell[]) => {
+                row.forEach((cell: Cell) => {
+                    if (cell.isMine) {
+                        cell.discovered = true;
+                    }
+                });
+            });
+        } else if (cellBeaten.probability === 0) {
+            this.discoverAround(position);
+        }
+    }
+
+    discoverAround(position: BoardPosition) {
+        const callback = (positionInternal: BoardPosition) => {
+            this.processDiscovered(positionInternal);
+        };
+        this.travelInPerimeterOfPositionWithCallBack(position, callback);
+    }
+
+    private processDiscovered(position: BoardPosition) {
+        const cell = this.matrix[position.row][position.column];
+        if (cell.isMine || cell.discovered) {
+            return;
+        }
+
+        cell.discovered = true;
+
+        if (cell.probability === 0) {
+            this.discoverAround(position);
+        }
     }
 
     getMatrix(): CellsMatrix {

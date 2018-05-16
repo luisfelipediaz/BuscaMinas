@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Minesweeper } from '../minesweeper/minesweeper';
+import { Cell } from '../cell/cell';
 
 @Component({
   selector: 'board',
@@ -13,4 +14,7 @@ export class BoardComponent implements OnInit {
   ngOnInit() {
   }
 
+  clickCell(row: number, column: number) {
+    this.game.processBeaten({ row, column });
+  }
 }

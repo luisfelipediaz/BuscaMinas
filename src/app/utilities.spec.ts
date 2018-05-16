@@ -7,6 +7,7 @@ describe('Utilities', () => {
         const cell: Cell = {
             isMine: false,
             beaten: false,
+            discovered: false,
             probability: 0
         };
         const expected = new Array(10).fill(new Array(9).fill(cell));

@@ -4,6 +4,7 @@ import { BoardComponent } from './board.component';
 import { By } from '@angular/platform-browser';
 import { Minesweeper } from '../minesweeper/minesweeper';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Cell } from '../cell/cell';
 
 describe('BoardComponent', () => {
   let component: BoardComponent;
@@ -57,5 +58,13 @@ describe('BoardComponent', () => {
     const cell = fixture.debugElement.query(By.css('tr:first-child>td>cell'));
 
     expect(cell).toBeTruthy();
+  });
+
+  it('should be "clickCell" call "processBeaten" with correct parameters', () => {
+    component.game = Minesweeper.newBeginersGame();
+    spyOn(component.game, 'processBeaten');
+    component.clickCell(1, 4);
+
+    expect(component.game.processBeaten).toHaveBeenCalledWith({ row: 1, column: 4 });
   });
 });

@@ -1,9 +1,9 @@
 <table class="col">
   <tbody>
     <ng-container *ngIf="game">
-      <tr *ngFor="let row of game.getMatrix()">
-        <td *ngFor="let cell of row">
-          <cell [cell]="cell"></cell>
+      <tr *ngFor="let row of game.getMatrix(); index as rowIndex;">
+        <td *ngFor="let cell of row; index as columnIndex;">
+          <cell [cell]="cell" (clickCell)="clickCell(rowIndex, columnIndex)"></cell>
         </td>
       </tr>
     </ng-container>

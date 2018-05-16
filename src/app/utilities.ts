@@ -5,6 +5,7 @@ import { BoardPosition } from './board/board-position';
 const newCell: Cell = {
     isMine: false,
     beaten: false,
+    discovered: false,
     probability: 0
 };
 

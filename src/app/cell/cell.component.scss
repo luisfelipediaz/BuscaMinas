@@ -1,0 +1,25 @@
+h3 {
+    line-height: unset;
+}
+
+span.mine {
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+div.content.beaten.mine {
+    background-color: red;
+}
+
+div:hover {
+    background: gray;
+    cursor: pointer;
+}
+
+div.discovered {
+    background-color: darkgray;
+    :hover {
+        background: unset;
+        cursor: unset;
+    }
+}

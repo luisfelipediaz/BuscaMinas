@@ -37,6 +37,7 @@ describe('Minesweeper', () => {
         const cellFill: Cell = {
             beaten: false,
             isMine: false,
+            discovered: false,
             probability: 0
         };
 
@@ -133,5 +134,92 @@ describe('Minesweeper', () => {
         expect(game.getMatrix()[1][0].probability).toBe(1);
         expect(game.getMatrix()[1][1].probability).toBe(1);
         expect(game.getMatrix()[0][1].probability).toBe(1);
+    });
+
+    it('should "processBeaten" change "beaten" and "discovered" to true in correct position', () => {
+        const game = new Minesweeper({ rows: 7, columns: 7, countMines: 0 });
+        game.processBeaten({ row: 2, column: 5 });
+
+        expect(game.getMatrix()[2][5].beaten).toBeTruthy();
+        expect(game.getMatrix()[2][5].discovered).toBeTruthy();
+    });
+
+    it('should "processBeaten" if cell in position is mine discover all others mines', () => {
+        const game = new Minesweeper({ columns: 3, rows: 3, countMines: 0 });
+        game.getMatrix()[0][1].isMine = true;
+        game.getMatrix()[1][0].isMine = true;
+        game.getMatrix()[2][1].isMine = true;
+
+        game.processBeaten({ row: 0, column: 1 });
+
+        expect(game.getMatrix()[0][1].discovered).toBeTruthy();
+        expect(game.getMatrix()[1][0].discovered).toBeTruthy();
+        expect(game.getMatrix()[2][1].discovered).toBeTruthy();
+    });
+
+    it('should "processBeaten" if cell in the position NOT is mine NOT discover all others mines', () => {
+        const game = new Minesweeper({ columns: 3, rows: 3, countMines: 0 });
+        game.getMatrix()[0][1].isMine = true;
+        game.getMatrix()[1][0].isMine = true;
+        game.getMatrix()[2][1].isMine = true;
+
+        game.processBeaten({ row: 0, column: 0 });
+
+        expect(game.getMatrix()[0][1].discovered).toBeFalsy();
+        expect(game.getMatrix()[1][0].discovered).toBeFalsy();
+        expect(game.getMatrix()[2][1].discovered).toBeFalsy();
+    });
+
+    it('should "processBeaten" call "discoverAround" if cell in the position NOT is a mine and probability is 0', () => {
+        const game = new Minesweeper({ columns: 3, rows: 3, countMines: 0 });
+        const position: BoardPosition = { row: 0, column: 0 };
+        spyOn(game, 'discoverAround');
+
+        game.processBeaten(position);
+
+        expect(game.discoverAround).toHaveBeenCalledWith(position);
+    });
+
+    it('should "processBeaten" NOT call "discoverAround" if cell in the position NOT is a mine and probability is defferent to 0', () => {
+        const game = new Minesweeper({ columns: 3, rows: 3, countMines: 0 });
+        const position: BoardPosition = { row: 0, column: 0 };
+        game.getMatrix()[0][0].probability = 2;
+        spyOn(game, 'discoverAround');
+
+        game.processBeaten(position);
+
+        expect(game.discoverAround).not.toHaveBeenCalled();
+    });
+
+    it('should "processBeaten" NOT call "discoverAround" if cell in the position is a mine', () => {
+        const game = new Minesweeper({ columns: 3, rows: 3, countMines: 0 });
+        game.getMatrix()[0][0].isMine = true;
+        const position: BoardPosition = { row: 0, column: 0 };
+        spyOn(game, 'discoverAround');
+
+        game.processBeaten(position);
+
+        expect(game.discoverAround).not.toHaveBeenCalled();
+    });
+
+    // tslint:disable-next-line:max-line-length
+    it('should "discoverAround" discover the cells around of position until find probability different to 0 or mine', () => {
+        const game = new Minesweeper({ columns: 3, rows: 3, countMines: 0 });
+        const matrix = game.getMatrix();
+        matrix[0][0].probability = 1;
+        matrix[0][1].probability = 1;
+        matrix[1][1].probability = 1;
+        matrix[1][0].probability = 1;
+        matrix[0][2].isMine = true;
+
+        game.discoverAround({ row: 2, column: 2 });
+
+        expect(matrix[0][0].discovered).toBeFalsy();
+        expect(matrix[0][1].discovered).toBeTruthy();
+        expect(matrix[1][1].discovered).toBeTruthy();
+        expect(matrix[1][0].discovered).toBeTruthy();
+        expect(matrix[2][0].discovered).toBeTruthy();
+        expect(matrix[2][1].discovered).toBeTruthy();
+        expect(matrix[1][2].discovered).toBeTruthy();
     });
 });
