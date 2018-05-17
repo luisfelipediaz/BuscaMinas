@@ -38,6 +38,7 @@ describe('Minesweeper', () => {
             beaten: false,
             isMine: false,
             discovered: false,
+            marked: false,
             probability: 0
         };
 

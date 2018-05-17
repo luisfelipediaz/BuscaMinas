@@ -6,6 +6,7 @@ const newCell: Cell = {
     isMine: false,
     beaten: false,
     discovered: false,
+    marked: false,
     probability: 0
 };
 

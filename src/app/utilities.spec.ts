@@ -8,6 +8,7 @@ describe('Utilities', () => {
             isMine: false,
             beaten: false,
             discovered: false,
+            marked: false,
             probability: 0
         };
         const expected = new Array(10).fill(new Array(9).fill(cell));

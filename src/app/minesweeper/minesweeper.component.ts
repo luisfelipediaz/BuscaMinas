@@ -14,4 +14,7 @@ export class MinesweeperComponent implements OnInit {
     this.game = Minesweeper.newBeginersGame();
   }
 
+  restart() {
+    this.game = Minesweeper.newBeginersGame();
+  }
 }

@@ -1,8 +1,15 @@
 <header class="text-center py-3">
     <h2>Minesweeper</h2>
 </header>
-<div class="row height-all">
-    <div class="col-md-4 offset-md-4">
+<div class="d-flex justify-content-center height-all">
+    <div>
+        <div class="d-flex justify-content-center">
+            <div>
+                <button name="restart" class="btn btn-sm" (click)="restart()">
+                    <i class="fa fa-3x fa-smile-o"></i>
+                </button>
+            </div>
+        </div>
         <board [game]="game"></board>
     </div>
 </div>
