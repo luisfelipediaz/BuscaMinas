@@ -1,9 +1,11 @@
-<div class="content" (click)="click()" [class.discovered]="cell.discovered" [class.mine]="cell.discovered && cell.isMine"
+<div class="content" (click)="click()" (contextmenu)="contextmenu()" [class.discovered]="cell.discovered" [class.mine]="cell.discovered && cell.isMine"
     [class.beaten]="cell.beaten">
     <ng-container *ngIf="cell.discovered">
         <span *ngIf="cell.isMine; else probabilityBlock" class="mine">X</span>
         <ng-template #probabilityBlock>
-            <h3>{{ cell.probability }}</h3>
+            <ng-container *ngIf="cell.probability > 0">
+                <h3>{{ cell.probability }}</h3>
+            </ng-container>
         </ng-template>
     </ng-container>
 </div>

@@ -14,4 +14,8 @@ export class BoardComponent {
   clickCell(row: number, column: number) {
     this.game.processBeaten({ row, column });
   }
+
+  markCell(row: number, column: number) {
+    this.game.processMark({ row, column });
+  }
 }

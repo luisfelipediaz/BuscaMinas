@@ -43,7 +43,6 @@ describe('BoardComponent', () => {
     expect(tr.length).toBe(8);
   });
 
-
   it('should render 8 td by tr', () => {
     component.game = Minesweeper.newBeginersGame();
     fixture.detectChanges();
@@ -60,11 +59,19 @@ describe('BoardComponent', () => {
     expect(cell).toBeTruthy();
   });
 
-  it('should be "clickCell" call "processBeaten" with correct parameters', () => {
+  it('should "clickCell" call "processBeaten" with correct parameters', () => {
     component.game = Minesweeper.newBeginersGame();
     spyOn(component.game, 'processBeaten');
     component.clickCell(1, 4);
 
     expect(component.game.processBeaten).toHaveBeenCalledWith({ row: 1, column: 4 });
+  });
+
+  it('should "markCell" call "processMark" with correct parameters', () => {
+    component.game = Minesweeper.newBeginersGame();
+    spyOn(component.game, 'processMark');
+    component.markCell(1, 3);
+
+    expect(component.game.processMark).toHaveBeenCalledWith({ row: 1, column: 3 });
   });
 });

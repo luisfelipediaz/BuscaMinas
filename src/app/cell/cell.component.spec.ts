@@ -46,20 +46,28 @@ describe('CellComponent', () => {
     expect(pElement).toBeTruthy();
   });
 
-  it('should on click p element call "click"', () => {
+  it('should on click div element call "click"', () => {
     spyOn(component, 'click');
-    const pElement = fixture.debugElement.query(By.css('div[class="content"]'));
+    const divElement = fixture.debugElement.query(By.css('div[class="content"]'));
 
-    pElement.nativeElement.click();
+    divElement.nativeElement.click();
 
     expect(component.click).toHaveBeenCalled();
   });
 
+  it('should on contextmenu div element call "contextmenu"', () => {
+    spyOn(component, 'contextmenu');
+    const divElement = fixture.debugElement.query(By.css('div[class="content"]'));
+
+    divElement.nativeElement.dispatchEvent(new CustomEvent('contextmenu'));
+
+    expect(component.contextmenu).toHaveBeenCalled();
+  });
+
   it('should "click" call output "clickCell"', () => {
     let called: boolean;
-    component.clickCell.subscribe(() => {
-      called = true;
-    });
+
+    component.clickCell.subscribe(() => called = true);
 
     component.click();
 
@@ -77,14 +85,46 @@ describe('CellComponent', () => {
     expect(called).toBeFalsy();
   });
 
-  it('should be render probability if cell is discovered and not is mine', () => {
+  it('should "contextmenu" call output "markCell"', () => {
+    let called: boolean;
+
+    component.markCell.subscribe(() => called = true);
+
+    component.contextmenu();
+
+    expect(called).toBeTruthy();
+  });
+
+  it('should when cell.discovered the "contextmenu" function not call EventEmitter "markCell"', () => {
+    let called = false;
+
+    component.markCell.subscribe(() => called = true);
+
     component.cell.discovered = true;
+    component.contextmenu();
+
+    expect(called).toBeFalsy();
+  });
+
+  it('should be render probability if cell is discovered, not is mine and probability is greater than 0', () => {
+    component.cell.discovered = true;
+    component.cell.probability = 1;
     fixture.detectChanges();
 
     const probability = fixture.debugElement.query(By.css('div>h3'));
 
     expect(probability).toBeTruthy();
     expect(probability.nativeElement.textContent).toBe(`${cell.probability}`);
+  });
+
+  it('should be NOT render probability if cell is discovered, not is mine and probability is 0', () => {
+    component.cell.discovered = true;
+    component.cell.probability = 0;
+    fixture.detectChanges();
+
+    const probability = fixture.debugElement.query(By.css('div>h3'));
+
+    expect(probability).toBeFalsy();
   });
 
   it('should be NOT render probability if cell not discovered and not is mine', () => {

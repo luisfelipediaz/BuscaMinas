@@ -22,9 +22,13 @@ export class Minesweeper {
         }
     }
 
+    getMatrix(): CellsMatrix {
+        return this.matrix;
+    }
+
     generateNewMine() {
         const position = this.getFirstPositionWithoutMine();
-        const cell = this.matrix[position.row][position.column];
+        const cell = this.getMine(position);
 
         cell.isMine = true;
         delete cell.probability;
@@ -32,19 +36,23 @@ export class Minesweeper {
         this.increasePerimeterProbability(position);
     }
 
+    private getMine(position: BoardPosition): Cell {
+        return this.matrix[position.row][position.column];
+    }
+
     getFirstPositionWithoutMine(): BoardPosition {
         let position: BoardPosition;
 
         do {
             position = Utilities.getRandomPosition(this.dimension);
-        } while (this.matrix[position.row][position.column].isMine);
+        } while (this.getMine(position).isMine);
 
         return position;
     }
 
     increasePerimeterProbability(position: BoardPosition) {
-        this.travelOfPerimeterWithCallBack(position,
-            (positionInternal: BoardPosition) => this.incrementProbabilityIfNotIsMine(positionInternal));
+        const callback = (positionInternal: BoardPosition) => this.incrementProbabilityIfNotIsMine(positionInternal);
+        this.travelOfPerimeterWithCallBack(position, callback);
     }
 
     private travelOfPerimeterWithCallBack(position: BoardPosition, callback: any) {
@@ -67,8 +75,9 @@ export class Minesweeper {
     }
 
     private incrementProbabilityIfNotIsMine(position: BoardPosition) {
-        if (!this.matrix[position.row][position.column].isMine) {
-            this.matrix[position.row][position.column].probability++;
+        const cell: Cell = this.getMine(position);
+        if (!cell.isMine) {
+            cell.probability++;
         }
     }
 
@@ -89,16 +98,20 @@ export class Minesweeper {
         cellBeaten.discovered = cellBeaten.beaten = true;
 
         if (cellBeaten.isMine) {
-            this.matrix.forEach((row: Cell[]) => {
-                row.forEach((cell: Cell) => {
-                    if (cell.isMine) {
-                        cell.discovered = true;
-                    }
-                });
-            });
+            this.discoverAllMines();
         } else if (cellBeaten.probability === 0) {
             this.discoverAround(position);
         }
+    }
+
+    private discoverAllMines() {
+        this.matrix.forEach((row: Cell[]) => {
+            row.forEach((cell: Cell) => {
+                if (cell.isMine) {
+                    cell.discovered = true;
+                }
+            });
+        });
     }
 
     discoverAround(position: BoardPosition) {
@@ -109,7 +122,7 @@ export class Minesweeper {
     }
 
     private processDiscovered(position: BoardPosition) {
-        const cell = this.matrix[position.row][position.column];
+        const cell = this.getMine(position);
         if (cell.isMine || cell.discovered) {
             return;
         }
@@ -121,7 +134,7 @@ export class Minesweeper {
         }
     }
 
-    getMatrix(): CellsMatrix {
-        return this.matrix;
+    processMark(position: BoardPosition) {
+
     }
 }
